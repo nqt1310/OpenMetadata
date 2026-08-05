@@ -1,0 +1,24 @@
+# Compose override to run the Excel Report connector's scheduled ingestion
+# through OpenMetadata's own Airflow-based ingestion service, so pipelines
+# created/deployed from the UI actually have the connector + openpyxl.
+#
+# Usage (on top of the quickstart stack):
+#   docker compose \
+#     -f docker/docker-compose-quickstart/docker-compose.yml \
+#     -f docker/excelreport/docker-compose.override.yml \
+#     up -d ingestion
+#
+# Set REPORT_REQUESTS_DIR to an absolute, Windows-style path (forward
+# slashes, e.g. C:/Users/you/report-requests) wherever your
+# YCPT_BAOCAO_*.xlsx workbooks live - NOT a repo path, so real report data
+# never risks being committed. /data/report-requests (the container side)
+# is what you put in the connectionOptions.directoryPath of the Ingestion
+# Pipeline.
+services:
+  ingestion:
+    image: excelreport-airflow-ingestion
+    volumes:
+      - ingestion-volume-dag-airflow:/opt/airflow/dag_generated_configs
+      - ingestion-volume-dags:/opt/airflow/dags
+      - ingestion-volume-tmp:/tmp
+      - ${REPORT_REQUESTS_DIR}:/data/report-requests

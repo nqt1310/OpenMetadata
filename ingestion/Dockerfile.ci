@@ -139,6 +139,10 @@ RUN wget -q https://repo1.maven.org/maven2/org/antlr/antlr4/4.9.2/antlr4-4.9.2-c
 ARG INGESTION_DEPENDENCY="all"
 RUN pip install ".[${INGESTION_DEPENDENCY}]"
 
+# Excel Report connector (metadata.ingestion.source.dashboard.excelreport) -
+# a CustomDashboard sourcePythonClass connector, not part of the [all] extra.
+RUN pip install openpyxl
+
 # Temporary workaround for https://github.com/open-metadata/OpenMetadata/issues/9593
 RUN [ $(uname -m) = "x86_64" ] \
   && pip install ".[db2]" \

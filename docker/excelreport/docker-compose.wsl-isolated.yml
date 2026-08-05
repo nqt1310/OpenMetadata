@@ -1,0 +1,53 @@
+# Renames containers/network away from the quickstart stack's hardcoded
+# defaults (openmetadata_mysql, openmetadata_server, ...) and off its fixed
+# 172.16.240.0/24 subnet, because this WSL distro's Docker engine already
+# runs an unrelated OpenMetadata stack (a different project on D:\) using
+# those exact same names/subnet. Container/network *names* only - the
+# service names (mysql, elasticsearch, ingestion, ...) that services use to
+# reach each other over the network are untouched, so no other config needs
+# to change.
+#
+# Usage (from repo root, inside the WSL distro):
+#   OPENMETADATA_DB_IMAGE=openmetadata/db:latest \
+#   OPENMETADATA_SERVER_IMAGE=openmetadata/server:latest \
+#   OPENMETADATA_INGESTION_IMAGE=excelreport-airflow-ingestion \
+#   REPORT_REQUESTS_DIR=/path/to/report-requests \
+#   docker compose -p excelreport \
+#     -f docker/docker-compose-quickstart/docker-compose.yml \
+#     -f docker/excelreport/docker-compose.wsl-isolated.yml \
+#     -f docker/excelreport/docker-compose.override.yml \
+#     up -d mysql elasticsearch execute-migrate-all openmetadata-server ingestion
+services:
+  mysql:
+    container_name: excelreport_mysql
+    # Replace the base file's relative bind-mount (./docker-volume/db-data)
+    # with a named volume: that bind-mount resolves to a path under
+    # /mnt/c/... in WSL, and MySQL's unix socket file can't be created on
+    # that 9p/drvfs-backed filesystem ("Bind on unix socket: Operation not
+    # supported"). A named volume lives on the WSL VM's native ext4 disk.
+    volumes:
+      - excelreport-mysql-data:/var/lib/mysql
+  elasticsearch:
+    container_name: excelreport_elasticsearch
+  execute-migrate-all:
+    container_name: excelreport_execute_migrate_all
+  openmetadata-server:
+    container_name: excelreport_server
+    ports:
+      - "18585:8585"
+      - "18586:8586"
+  ingestion:
+    container_name: excelreport_ingestion
+    ports:
+      - "18080:8080"
+
+networks:
+  app_net:
+    name: excelreport_app_net
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.30.240.0/24"
+
+volumes:
+  excelreport-mysql-data:

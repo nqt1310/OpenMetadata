@@ -131,6 +131,10 @@ RUN python /home/airflow/scripts/datamodel_generation.py
 ARG INGESTION_DEPENDENCY="all"
 RUN pip install ".[${INGESTION_DEPENDENCY}]"
 
+# Excel Report connector (metadata.ingestion.source.dashboard.excelreport) -
+# a CustomDashboard sourcePythonClass connector, not part of the [all] extra.
+RUN pip install openpyxl
+
 # Temporary workaround for https://github.com/open-metadata/OpenMetadata/issues/9593
 RUN [ $(uname -m) = "x86_64" ] \
   && pip install ".[db2]" \

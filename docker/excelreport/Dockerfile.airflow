@@ -1,0 +1,24 @@
+# Drops the Excel Report connector into the OFFICIAL Airflow-based ingestion
+# image (the one OpenMetadata's own UI deploys/schedules Ingestion Pipelines
+# on), so "Add Ingestion" -> schedule -> Deploy works from the browser like
+# any other connector, instead of running `docker run` by hand each time.
+#
+# Pick a tag that matches your OpenMetadata server's version exactly (OM
+# enforces major.minor match between server and ingestion client) - check
+# with: curl -s http://localhost:8585/api/v1/system/version
+#
+# Build:
+#   docker build -f docker/excelreport/Dockerfile.airflow \
+#     --build-arg BASE_TAG=1.12.14 -t excelreport-airflow-ingestion .
+#
+# Then point the compose "ingestion" service at it, e.g.:
+#   OPENMETADATA_INGESTION_IMAGE=excelreport-airflow-ingestion \
+#     docker compose -f docker/docker-compose-quickstart/docker-compose.yml up -d ingestion
+
+ARG BASE_TAG=1.12.14
+FROM openmetadata/ingestion:${BASE_TAG}
+
+COPY --chown=airflow:0 ingestion/src/metadata/ingestion/source/dashboard/excelreport \
+     /home/airflow/.local/lib/python3.10/site-packages/metadata/ingestion/source/dashboard/excelreport
+
+RUN pip install --no-cache-dir openpyxl

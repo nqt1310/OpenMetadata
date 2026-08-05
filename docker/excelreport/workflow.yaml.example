@@ -1,0 +1,31 @@
+# Copy this to workflow.yaml, fill in the placeholders, and mount it into
+# the excelreport-ingestion container at /config/workflow.yaml.
+source:
+  type: CustomDashboard
+  serviceName: mb_ycpt_baocao
+  serviceConnection:
+    config:
+      type: CustomDashboard
+      sourcePythonClass: metadata.ingestion.source.dashboard.excelreport.metadata.ExcelReportSource
+      connectionOptions:
+        directoryPath: /data/report-requests
+        filePattern: "*.xlsx"
+  sourceConfig:
+    config:
+      type: DashboardMetadata
+      dashboardFilterPattern: {}
+      chartFilterPattern: {}
+      # lineageInformation:
+      #   dbServicePrefixes: []   # e.g. ["mysql_prod.some_db.rpt"] to scope table lookups
+sink:
+  type: metadata-rest
+  config: {}
+workflowConfig:
+  openMetadataServerConfig:
+    # Use http://openmetadata-server:8585/api when running on the
+    # ometa_network created by docker/development/docker-compose.yml.
+    # Use http://host.docker.internal:8585/api if the server runs elsewhere on the host.
+    hostPort: http://openmetadata-server:8585/api
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: "<PASTE_A_BOT_OR_ADMIN_JWT_TOKEN_HERE>"

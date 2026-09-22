@@ -41,6 +41,10 @@ env
 # logs
 logs
 *.log
+# Source packages, not runtime log output: the bare `logs` pattern above
+# matches any directory of that name at any depth.
+!ingestion/src/metadata/parsers/logs/
+!ingestion/src/metadata/ingestion/source/messaging/logs/
 *.egg-info
 .eggs
 *.db

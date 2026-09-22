@@ -125,7 +125,9 @@ def find_header_row(
         columns = {col: text for col, text in columns.items() if text}
         if not columns:
             continue
-        score = sum(1 for marker in markers if any(marker in text for text in columns.values()))
+        score = sum(
+            1 for marker in markers if any(marker in text for text in columns.values())
+        )
         if best is None or score > best.score:
             best = HeaderMatch(row=row, columns=columns, score=score)
     if best is None or best.score < min(MIN_HEADER_SCORE, len(markers)):
@@ -145,10 +147,15 @@ def get_col(header: HeaderMatch, *keywords: str) -> Optional[int]:  # noqa: UP04
 
 def _row_is_blank(worksheet: Worksheet, row: int) -> bool:
     max_column = (worksheet.max_column or 0) + 1
-    return all(worksheet.cell(row=row, column=col).value in (None, "") for col in range(1, max_column))
+    return all(
+        worksheet.cell(row=row, column=col).value in (None, "")
+        for col in range(1, max_column)
+    )
 
 
-def _find_row_label(worksheet: Worksheet, row: int, stt_col: Optional[int]) -> Optional[str]:  # noqa: UP045
+def _find_row_label(
+    worksheet: Worksheet, row: int, stt_col: Optional[int]
+) -> Optional[str]:  # noqa: UP045
     """Used for rows that are not data rows and not header noise - typically a
     'Báo cáo XYZ' section title spanning a single cell, grouping the rows below it."""
     if stt_col:
@@ -192,7 +199,9 @@ def iter_data_rows(
     return data_rows
 
 
-def parse_overview_sheet(worksheet: Worksheet, header: HeaderMatch) -> List[ReportOverview]:  # noqa: UP006
+def parse_overview_sheet(
+    worksheet: Worksheet, header: HeaderMatch
+) -> List[ReportOverview]:  # noqa: UP006
     col_name = get_col(header, "tên báo cáo")
     col_code = get_col(header, "mã báo cáo")
     col_folder = get_col(header, "thư mục đặt báo cáo")
@@ -251,7 +260,9 @@ def parse_overview_sheet(worksheet: Worksheet, header: HeaderMatch) -> List[Repo
     return overviews
 
 
-def parse_mapping_sheet(worksheet: Worksheet, header: HeaderMatch) -> List[MappingRow]:  # noqa: UP006
+def parse_mapping_sheet(
+    worksheet: Worksheet, header: HeaderMatch
+) -> List[MappingRow]:  # noqa: UP006
     col_indicator = get_col(header, "tên chỉ tiêu")
     col_type = get_col(header, "loại chỉ tiêu")
     col_sheet = get_col(header, "tên sheet")
@@ -301,7 +312,9 @@ def parse_mapping_sheet(worksheet: Worksheet, header: HeaderMatch) -> List[Mappi
     return rows
 
 
-def render_sheet_as_markdown(worksheet: Worksheet, max_rows: int = 200) -> Optional[str]:  # noqa: UP045
+def render_sheet_as_markdown(
+    worksheet: Worksheet, max_rows: int = 200
+) -> Optional[str]:  # noqa: UP045
     """Best-effort, generic dump of a free-form sheet (mockup / impact assessment)
     into a Markdown table, kept as reference documentation on the Dashboard rather
     than parsed into entities - these sheets are hand-drawn and not consistently
@@ -310,13 +323,20 @@ def render_sheet_as_markdown(worksheet: Worksheet, max_rows: int = 200) -> Optio
     max_row = min(worksheet.max_row or 0, max_rows)
     min_col, max_col = None, None
     for row in range(1, max_row + 1):
-        values = [clean(worksheet.cell(row=row, column=col).value) for col in range(1, (worksheet.max_column or 0) + 1)]
+        values = [
+            clean(worksheet.cell(row=row, column=col).value)
+            for col in range(1, (worksheet.max_column or 0) + 1)
+        ]
         if not any(values):
             continue
         used_rows.append((row, values))
         non_empty_cols = [i for i, v in enumerate(values, start=1) if v]
-        min_col = min(non_empty_cols) if min_col is None else min([min_col, *non_empty_cols])
-        max_col = max(non_empty_cols) if max_col is None else max([max_col, *non_empty_cols])
+        min_col = (
+            min(non_empty_cols) if min_col is None else min([min_col, *non_empty_cols])
+        )
+        max_col = (
+            max(non_empty_cols) if max_col is None else max([max_col, *non_empty_cols])
+        )
     if not used_rows or min_col is None:
         return None
     lines = []
@@ -357,12 +377,16 @@ def classify_sheets(workbook) -> SheetClassification:
         if (
             overview_score
             and overview_score >= mapping_score
-            and (classification.overview_header is None or overview_score > classification.overview_header.score)
+            and (
+                classification.overview_header is None
+                or overview_score > classification.overview_header.score
+            )
         ):
             classification.overview = worksheet
             classification.overview_header = overview_header
         elif mapping_score and (
-            classification.mapping_header is None or mapping_score > classification.mapping_header.score
+            classification.mapping_header is None
+            or mapping_score > classification.mapping_header.score
         ):
             classification.mapping = worksheet
             classification.mapping_header = mapping_header
@@ -370,7 +394,9 @@ def classify_sheets(workbook) -> SheetClassification:
             remaining.append(worksheet)
 
     for worksheet in remaining:
-        if "template" in normalize(worksheet.title) or "template" in normalize(worksheet["A1"].value):
+        if "template" in normalize(worksheet.title) or "template" in normalize(
+            worksheet["A1"].value
+        ):
             classification.mockup = worksheet
             break
     if classification.mockup is None and remaining:
@@ -387,17 +413,30 @@ def parse_workbook(path: Path) -> List[ParsedDashboard]:  # noqa: UP006
     classification = classify_sheets(workbook)
 
     if classification.overview is None or classification.overview_header is None:
-        logger.warning(f"Could not find a report-overview sheet in {path}, skipping file")
+        logger.warning(
+            f"Could not find a report-overview sheet in {path}, skipping file"
+        )
         return []
 
-    overviews = parse_overview_sheet(classification.overview, classification.overview_header)
+    overviews = parse_overview_sheet(
+        classification.overview, classification.overview_header
+    )
     all_mapping_rows = (
         parse_mapping_sheet(classification.mapping, classification.mapping_header)
-        if classification.mapping is not None and classification.mapping_header is not None
+        if classification.mapping is not None
+        and classification.mapping_header is not None
         else []
     )
-    mockup_markdown = render_sheet_as_markdown(classification.mockup) if classification.mockup is not None else None
-    impact_markdown = render_sheet_as_markdown(classification.impact) if classification.impact is not None else None
+    mockup_markdown = (
+        render_sheet_as_markdown(classification.mockup)
+        if classification.mockup is not None
+        else None
+    )
+    impact_markdown = (
+        render_sheet_as_markdown(classification.impact)
+        if classification.impact is not None
+        else None
+    )
 
     dashboards = [
         ParsedDashboard(
@@ -413,7 +452,9 @@ def parse_workbook(path: Path) -> List[ParsedDashboard]:  # noqa: UP006
     return dashboards
 
 
-def _assign_mapping_rows(dashboards: List[ParsedDashboard], mapping_rows: List[MappingRow]) -> None:  # noqa: UP006
+def _assign_mapping_rows(
+    dashboards: List[ParsedDashboard], mapping_rows: List[MappingRow]
+) -> None:  # noqa: UP006
     """Assigns each mapping row to the dashboard whose report name best matches
     the row's section/group label. With a single dashboard in the workbook
     (the common case) every row goes to it."""
@@ -429,7 +470,9 @@ def _assign_mapping_rows(dashboards: List[ParsedDashboard], mapping_rows: List[M
         best_overlap = 0
         for dashboard in dashboards:
             name = normalize(dashboard.overview.report_name)
-            overlap = len(set(label.split()) & set(name.split())) if label and name else 0
+            overlap = (
+                len(set(label.split()) & set(name.split())) if label and name else 0
+            )
             if overlap > best_overlap:
                 best_overlap = overlap
                 best_dashboard = dashboard
@@ -481,7 +524,9 @@ def render_dashboard_description(dashboard: ParsedDashboard) -> str:
         sections.append(f"## Ý nghĩa / Mục đích\n\n{overview.purpose}")
     sections.append(_render_overview_table(overview))
     if dashboard.mockup_markdown:
-        sections.append(f"## Template / Mockup báo cáo (PL3.2)\n\n{dashboard.mockup_markdown}")
+        sections.append(
+            f"## Template / Mockup báo cáo (PL3.2)\n\n{dashboard.mockup_markdown}"
+        )
     if dashboard.impact_markdown:
         sections.append(f"## Đánh giá tác động (PL3.5)\n\n{dashboard.impact_markdown}")
     sections.append(f"_Nguồn: `{dashboard.source_file.name}`_")
@@ -490,11 +535,19 @@ def render_dashboard_description(dashboard: ParsedDashboard) -> str:
 
 def render_chart_description(rows: List[MappingRow]) -> str:  # noqa: UP006
     header = (
-        "| Mục/biểu đồ | Tên chỉ tiêu | Loại | Ý nghĩa | Logic tính toán | Đơn vị tính | Nguồn | Mapping rule | Note |"
+        "| Mục/biểu đồ | Tên chỉ tiêu | Loại | Ý nghĩa | Logic tính toán "
+        "| Đơn vị tính | Nguồn | Mapping rule | Note |"
     )
     lines = [header, "| --- | --- | --- | --- | --- | --- | --- | --- | --- |"]
     for row in rows:
-        source = ".".join(part for part in (row.source_schema, row.source_table, row.source_field) if part) or "-"
+        source = (
+            ".".join(
+                part
+                for part in (row.source_schema, row.source_table, row.source_field)
+                if part
+            )
+            or "-"
+        )
         lines.append(
             "| {} | {} | {} | {} | {} | {} | {} | {} | {} |".format(
                 row.section_name or "-",

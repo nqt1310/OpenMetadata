@@ -75,6 +75,7 @@ from metadata.ingestion.api.steps import InvalidSourceException
 from metadata.ingestion.connections.test_connections import SourceConnectionException
 from metadata.ingestion.ometa.ometa_api import OpenMetadata
 from metadata.ingestion.source.dashboard.dashboard_service import DashboardServiceSource
+from metadata.ingestion.source.dashboard.excelreport import custom_properties
 from metadata.ingestion.source.dashboard.excelreport import parser as excel_parser
 from metadata.ingestion.source.dashboard.excelreport.models import ParsedDashboard
 from metadata.utils import fqn
@@ -87,6 +88,7 @@ logger = ingestion_logger()
 
 DIRECTORY_PATH_KEY = "directoryPath"
 FILE_PATTERN_KEY = "filePattern"
+REGISTER_CUSTOM_PROPERTIES_KEY = "registerCustomProperties"
 DEFAULT_FILE_PATTERN = "*.xlsx"
 
 
@@ -96,7 +98,9 @@ class ExcelReportClient:
     file_pattern: str
 
     def list_files(self) -> List[Path]:  # noqa: UP006
-        return sorted(path for path in self.directory.glob(self.file_pattern) if path.is_file())
+        return sorted(
+            path for path in self.directory.glob(self.file_pattern) if path.is_file()
+        )
 
 
 def get_connection(connection: CustomDashboardConnection) -> ExcelReportClient:
@@ -108,14 +112,18 @@ def get_connection(connection: CustomDashboardConnection) -> ExcelReportClient:
         )
     directory_path = Path(directory)
     if not directory_path.is_dir():
-        raise SourceConnectionException(f"'{directory}' is not a directory OpenMetadata can read")
+        raise SourceConnectionException(
+            f"'{directory}' is not a directory OpenMetadata can read"
+        )
     file_pattern = options.get(FILE_PATTERN_KEY) or DEFAULT_FILE_PATTERN
     return ExcelReportClient(directory=directory_path, file_pattern=file_pattern)
 
 
 def _require_report_files(client: ExcelReportClient) -> None:
     if not client.list_files():
-        raise SourceConnectionException(f"No files matching '{client.file_pattern}' found in '{client.directory}'")
+        raise SourceConnectionException(
+            f"No files matching '{client.file_pattern}' found in '{client.directory}'"
+        )
 
 
 def _read_sample_workbook(client: ExcelReportClient) -> None:
@@ -150,7 +158,9 @@ def test_connection(
     for name, mandatory, check in checks:
         try:
             check(client)
-            steps.append(TestConnectionStepResult(name=name, mandatory=mandatory, passed=True))
+            steps.append(
+                TestConnectionStepResult(name=name, mandatory=mandatory, passed=True)
+            )
         except Exception as exc:
             steps.append(
                 TestConnectionStepResult(  # pyright: ignore[reportCallIssue]
@@ -163,7 +173,9 @@ def test_connection(
 
     result = TestConnectionResult(
         status=(
-            StatusType.Failed if any(not step.passed and step.mandatory for step in steps) else StatusType.Successful
+            StatusType.Failed
+            if any(not step.passed and step.mandatory for step in steps)
+            else StatusType.Successful
         ),
         steps=steps,
     )
@@ -171,7 +183,9 @@ def test_connection(
         metadata.patch_automation_workflow_response(
             automation_workflow,
             result,
-            WorkflowStatus.Failed if result.status == StatusType.Failed else WorkflowStatus.Successful,
+            WorkflowStatus.Failed
+            if result.status == StatusType.Failed
+            else WorkflowStatus.Successful,
         )
     return result
 
@@ -186,16 +200,54 @@ class ExcelReportSource(DashboardServiceSource):
 
     config: WorkflowSource
     metadata_config: OpenMetadataConnection
+    # Set by prepare(); False keeps the pre-custom-property behaviour of
+    # rendering every workbook field into the description.
+    store_extension: bool = False
 
     @classmethod
-    def create(cls, config_dict, metadata: OpenMetadata, pipeline_name: Optional[str] = None):  # noqa: UP045
+    def create(
+        cls, config_dict, metadata: OpenMetadata, pipeline_name: Optional[str] = None
+    ):  # noqa: UP045
         config = WorkflowSource.model_validate(config_dict)
         connection: CustomDashboardConnection = config.serviceConnection.root.config
         if not isinstance(connection, CustomDashboardConnection):
-            raise InvalidSourceException(f"Expected CustomDashboardConnection, but got {connection}")
+            raise InvalidSourceException(
+                f"Expected CustomDashboardConnection, but got {connection}"
+            )
         return cls(config, metadata)
 
-    def get_dashboards_list(self) -> Optional[List[ParsedDashboard]]:  # noqa: UP006, UP045
+    def prepare(self):
+        """
+        Declare the report fields as Dashboard custom properties.
+
+        Done once per run rather than per dashboard: registration edits the
+        `dashboard` Type, which is shared. `self.store_extension` records
+        whether it worked, so `yield_dashboard` knows whether it can put the
+        fields in `extension` or has to keep rendering them into the
+        description.
+        """
+        options = (
+            self.service_connection.connectionOptions.root
+            if self.service_connection.connectionOptions
+            else {}
+        )
+        requested = (
+            str(options.get(REGISTER_CUSTOM_PROPERTIES_KEY, "true")).lower() != "false"
+        )
+        self.store_extension = (
+            custom_properties.register_report_properties(self.metadata)
+            if requested
+            else False
+        )
+        if requested and self.store_extension:
+            logger.info(
+                f"Registered {len(custom_properties.REPORT_PROPERTIES)} report "
+                f"custom properties on the dashboard type"
+            )
+
+    def get_dashboards_list(
+        self,
+    ) -> Optional[List[ParsedDashboard]]:  # noqa: UP006, UP045
         dashboards: List[ParsedDashboard] = []  # noqa: UP006
         for path in self.client.list_files():
             try:
@@ -211,10 +263,14 @@ class ExcelReportSource(DashboardServiceSource):
     def get_dashboard_details(self, dashboard: ParsedDashboard) -> ParsedDashboard:
         return dashboard
 
-    def get_project_name(self, dashboard_details: ParsedDashboard) -> Optional[str]:  # noqa: UP045
+    def get_project_name(
+        self, dashboard_details: ParsedDashboard
+    ) -> Optional[str]:  # noqa: UP045
         return dashboard_details.overview.requester_unit_l1
 
-    def get_owner_ref(self, dashboard_details: ParsedDashboard) -> Optional[EntityReferenceList]:  # noqa: UP045
+    def get_owner_ref(
+        self, dashboard_details: ParsedDashboard
+    ) -> Optional[EntityReferenceList]:  # noqa: UP045
         contact = dashboard_details.overview.business_contact
         if contact and "@" in contact:
             try:
@@ -222,7 +278,9 @@ class ExcelReportSource(DashboardServiceSource):
                 if owner_ref:
                     return owner_ref
             except Exception as exc:
-                logger.debug(f"Could not resolve owner from business contact '{contact}': {exc}")
+                logger.debug(
+                    f"Could not resolve owner from business contact '{contact}': {exc}"
+                )
         return None
 
     def _chart_name(self, dashboard_details: ParsedDashboard, chart_group: str) -> str:
@@ -249,15 +307,46 @@ class ExcelReportSource(DashboardServiceSource):
             )
             self.chart_source_state.add(chart_fqn)
 
-    def yield_dashboard(self, dashboard_details: ParsedDashboard) -> Iterable[Either[CreateDashboardRequest]]:
+    def _build_description(
+        self, dashboard_details: ParsedDashboard
+    ) -> Optional[Markdown]:  # noqa: UP045
+        """
+        Describe what the report is for, not every field it declares.
+
+        Once the workbook fields live in `extension`, the description is
+        free to hold only the business purpose. Without them it has to carry
+        the full rendered table, or the data would be lost.
+        """
+        if not self.store_extension:
+            return Markdown(
+                excel_parser.render_dashboard_description(dashboard_details)
+            )
+        purpose = dashboard_details.overview.purpose
+        return Markdown(purpose) if purpose else None
+
+    def _build_extension(
+        self, dashboard_details: ParsedDashboard
+    ) -> Optional[dict]:  # noqa: UP045
+        if not self.store_extension:
+            return None
+        return custom_properties.build_extension(dashboard_details) or None
+
+    def yield_dashboard(
+        self, dashboard_details: ParsedDashboard
+    ) -> Iterable[Either[CreateDashboardRequest]]:
         dashboard_name = dashboard_details.dashboard_key
         try:
             source_url = dashboard_details.overview.link
             dashboard_request = CreateDashboardRequest(
                 name=EntityName(dashboard_name),
                 displayName=dashboard_details.overview.report_name,
-                description=Markdown(excel_parser.render_dashboard_description(dashboard_details)),
-                sourceUrl=(SourceUrl(source_url) if source_url and "://" in source_url else None),
+                description=self._build_description(dashboard_details),
+                extension=self._build_extension(dashboard_details),
+                sourceUrl=(
+                    SourceUrl(source_url)
+                    if source_url and "://" in source_url
+                    else None
+                ),
                 charts=[
                     FullyQualifiedEntityName(
                         fqn.build(
@@ -291,7 +380,9 @@ class ExcelReportSource(DashboardServiceSource):
                 )
             )
 
-    def yield_dashboard_chart(self, dashboard_details: ParsedDashboard) -> Iterable[Either[CreateChartRequest]]:
+    def yield_dashboard_chart(
+        self, dashboard_details: ParsedDashboard
+    ) -> Iterable[Either[CreateChartRequest]]:
         for chart_group in dashboard_details.chart_groups():
             chart_name = self._chart_name(dashboard_details, chart_group)
             if filter_by_chart(self.source_config.chartFilterPattern, chart_name):
@@ -317,7 +408,9 @@ class ExcelReportSource(DashboardServiceSource):
                     )
                 )
 
-    def _resolve_dashboard_entity(self, dashboard_details: ParsedDashboard) -> Optional[Dashboard]:  # noqa: UP045
+    def _resolve_dashboard_entity(
+        self, dashboard_details: ParsedDashboard
+    ) -> Optional[Dashboard]:  # noqa: UP045
         dashboard_fqn = fqn.build(
             self.metadata,
             entity_type=Dashboard,
@@ -326,7 +419,9 @@ class ExcelReportSource(DashboardServiceSource):
         )
         return self.metadata.get_by_name(entity=Dashboard, fqn=dashboard_fqn)
 
-    def _resolve_chart_entity(self, dashboard_details: ParsedDashboard, chart_group: str) -> Chart | None:
+    def _resolve_chart_entity(
+        self, dashboard_details: ParsedDashboard, chart_group: str
+    ) -> Chart | None:
         chart_fqn = fqn.build(
             self.metadata,
             entity_type=Chart,
@@ -344,9 +439,17 @@ class ExcelReportSource(DashboardServiceSource):
         prefix_schema_name: Optional[str],  # noqa: UP045
         prefix_table_name: Optional[str],  # noqa: UP045
     ) -> List[Table]:  # noqa: UP006
-        if prefix_schema_name and schema_name and prefix_schema_name.lower() != schema_name.lower():
+        if (
+            prefix_schema_name
+            and schema_name
+            and prefix_schema_name.lower() != schema_name.lower()
+        ):
             return []
-        if prefix_table_name and table_name and prefix_table_name.lower() != table_name.lower():
+        if (
+            prefix_table_name
+            and table_name
+            and prefix_table_name.lower() != table_name.lower()
+        ):
             return []
         try:
             fqn_search_string = build_es_fqn_search_string(
@@ -361,9 +464,15 @@ class ExcelReportSource(DashboardServiceSource):
                 fetch_multiple_entities=True,
             )
         except Exception as exc:
-            logger.debug(f"Could not resolve source table {schema_name}.{table_name}: {exc}")
+            logger.debug(
+                f"Could not resolve source table {schema_name}.{table_name}: {exc}"
+            )
             return []
-        return [from_entities] if isinstance(from_entities, Table) else list(from_entities or [])
+        return (
+            [from_entities]
+            if isinstance(from_entities, Table)
+            else list(from_entities or [])
+        )
 
     def yield_dashboard_lineage_details(
         self,
@@ -402,12 +511,19 @@ class ExcelReportSource(DashboardServiceSource):
                         "keeping the mapping as description-only"
                     )
                 for from_entity in from_tables:
-                    if dashboard_entity and (schema_name, table_name) not in dashboard_tables_seen:
-                        lineage = self._get_add_lineage_request(to_entity=dashboard_entity, from_entity=from_entity)
+                    if (
+                        dashboard_entity
+                        and (schema_name, table_name) not in dashboard_tables_seen
+                    ):
+                        lineage = self._get_add_lineage_request(
+                            to_entity=dashboard_entity, from_entity=from_entity
+                        )
                         if lineage:
                             yield lineage
                     if chart_entity:
-                        lineage = self._get_add_lineage_request(to_entity=chart_entity, from_entity=from_entity)
+                        lineage = self._get_add_lineage_request(
+                            to_entity=chart_entity, from_entity=from_entity
+                        )
                         if lineage:
                             yield lineage
                 dashboard_tables_seen.add((schema_name, table_name))

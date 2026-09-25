@@ -30,8 +30,10 @@ git push ──► CI (Jenkins | GitLab)
 - Docker: dùng Docker Desktop với *WSL integration* bật cho distro, hoặc cài `docker-ce` trong WSL.
 - Tool chain:
   ```bash
-  sudo apt update && sudo apt install -y openjdk-21-jdk maven python3.11 python3.11-venv \
-    build-essential libsasl2-dev unixodbc-dev jq antlr4
+  sudo apt update && sudo apt install -y openjdk-21-jdk maven python3.11 python3.11-venv python3.11-dev \
+    build-essential pkg-config libkrb5-dev libsasl2-dev unixodbc-dev libpq-dev \
+    default-libmysqlclient-dev librdkafka-dev libssl-dev libffi-dev jq
+  # thiếu libkrb5-dev => `make install_dev_env` fail "krb5-config: not found" (xem docs/build-logs/2026-09-25/BUILD-NOTES.md)
   # Node 22 + yarn (qua nvm)
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
   source ~/.bashrc && nvm install 22 && npm i -g yarn
@@ -84,6 +86,8 @@ mvn -DskipTests clean package
 
 - UI: <http://localhost:8585> (`admin@open-metadata.org` / `admin`)
 - Airflow (ingestion): <http://localhost:8080> (`admin` / `admin`)
+
+Log build thật + lỗi đã gặp: [build-logs/2026-09-25/BUILD-NOTES.md](build-logs/2026-09-25/BUILD-NOTES.md).
 
 Chỉ test connector Python mà không cần cả stack:
 ```bash

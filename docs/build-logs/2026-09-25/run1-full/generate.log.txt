@@ -1,0 +1,36 @@
++ step_generate
++ . env/bin/activate
+++ deactivate nondestructive
+++ '[' -n '' ']'
+++ '[' -n '' ']'
+++ hash -r
+++ '[' -n '' ']'
+++ unset VIRTUAL_ENV
+++ unset VIRTUAL_ENV_PROMPT
+++ '[' '!' nondestructive = nondestructive ']'
+++ VIRTUAL_ENV=/home/user/om-build/env
+++ export VIRTUAL_ENV
+++ _OLD_VIRTUAL_PATH=/root/.local/bin:/root/.cargo/bin:/usr/local/go/bin:/opt/node22/bin:/opt/maven/bin:/opt/gradle/bin:/opt/rbenv/bin:/root/.bun/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+++ PATH=/home/user/om-build/env/bin:/root/.local/bin:/root/.cargo/bin:/usr/local/go/bin:/opt/node22/bin:/opt/maven/bin:/opt/gradle/bin:/opt/rbenv/bin:/root/.bun/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+++ export PATH
+++ '[' -n '' ']'
+++ '[' -z '' ']'
+++ _OLD_VIRTUAL_PS1=
+++ PS1='(env) '
+++ export PS1
+++ VIRTUAL_ENV_PROMPT='(env) '
+++ export VIRTUAL_ENV_PROMPT
+++ hash -r
++ make generate
+Makefile:147: warning: overriding recipe for target 'build-ingestion-base-local'
+Makefile:142: warning: ignoring old recipe for target 'build-ingestion-base-local'
+Running Datamodel Code Generator
+Make sure to first run the install_dev recipe
+rm -rf ingestion/src/metadata/generated
+mkdir -p ingestion/src/metadata/generated
+python scripts/datamodel_generation.py
+Traceback (most recent call last):
+  File "/home/user/om-build/scripts/datamodel_generation.py", line 16, in <module>
+    import datamodel_code_generator.model.pydantic
+ModuleNotFoundError: No module named 'datamodel_code_generator'
+make: *** [Makefile:58: generate] Error 1

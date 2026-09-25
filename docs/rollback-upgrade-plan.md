@@ -42,6 +42,8 @@ Hệ quả:
 | U2 | 1.13.4 → 2.0.x | **major** | migration `2.0.0` có `ALTER/DROP`; đọc release notes + breaking changes; test kỹ connector custom |
 | U3 | 2.0.x → 2.1.x | minor | migration `2.1.0` |
 
+Trước U1: sửa `BASE_TAG` trong `docker/excelreport/Dockerfile.airflow` (đang `1.12.14`) và bổ sung connector log — xem [BUILD-NOTES](build-logs/2026-09-25/BUILD-NOTES.md) mục 7.
+
 Mỗi bước là một vòng đầy đủ 2.2 → 2.6 dưới đây.
 
 ### 2.2 Chuẩn bị code (trên máy dev/WSL)

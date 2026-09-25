@@ -1,0 +1,175 @@
++ step_yarn_install
++ make yarn_install_cache
+Makefile:147: warning: overriding recipe for target 'build-ingestion-base-local'
+Makefile:142: warning: ignoring old recipe for target 'build-ingestion-base-local'
+cd openmetadata-ui/src/main/resources/ui && yarn install --frozen-lockfile
+yarn install v1.22.22
+$ cd ../../../../.. && yarn install --frozen-lockfile && cd openmetadata-ui-core-components/src/main/resources/ui && yarn install && yarn build
+yarn install v1.22.22
+$ yarn global add node-gyp@10.0.1
+yarn global v1.22.22
+[1/4] Resolving packages...
+warning node-gyp > tar@6.2.1: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+warning node-gyp > glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+warning node-gyp > make-fetch-happen > cacache > tar@6.2.1: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+warning node-gyp > make-fetch-happen > cacache > glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+[2/4] Fetching packages...
+[3/4] Linking dependencies...
+[4/4] Building fresh packages...
+success Installed "node-gyp@10.0.1" with binaries:
+      - node-gyp
+Done in 6.49s.
+[1/5] Validating package.json...
+[2/5] Resolving packages...
+[3/5] Fetching packages...
+[4/5] Linking dependencies...
+warning Workspaces can only be enabled in private projects.
+[5/5] Building fresh packages...
+Done in 11.38s.
+yarn install v1.22.22
+[1/5] Validating package.json...
+[2/5] Resolving packages...
+warning Resolution field "minimatch@10.2.3" is incompatible with requested version "minimatch@^9.0.4"
+warning Resolution field "lodash@4.18.1" is incompatible with requested version "lodash@~4.17.23"
+warning Resolution field "minimatch@10.2.3" is incompatible with requested version "minimatch@10.2.1"
+warning Resolution field "minimatch@10.2.3" is incompatible with requested version "minimatch@^9.0.3"
+warning Resolution field "minimatch@10.2.3" is incompatible with requested version "minimatch@^3.1.5"
+warning Resolution field "minimatch@10.2.3" is incompatible with requested version "minimatch@^3.1.5"
+warning Resolution field "minimatch@10.2.3" is incompatible with requested version "minimatch@^3.1.5"
+warning Resolution field "minimatch@10.2.3" is incompatible with requested version "minimatch@^3.1.2"
+[3/5] Fetching packages...
+warning Pattern ["strip-ansi@^6.0.1"] is trying to unpack in the same destination "/usr/local/share/.cache/yarn/v6/npm-strip-ansi-cjs-6.0.1-integrity/node_modules/strip-ansi-cjs" as pattern ["strip-ansi-cjs@npm:strip-ansi@^6.0.1"]. This could result in non-deterministic behavior, skipping.
+warning Pattern ["string-width@^4.1.0"] is trying to unpack in the same destination "/usr/local/share/.cache/yarn/v6/npm-string-width-cjs-4.2.3-integrity/node_modules/string-width-cjs" as pattern ["string-width-cjs@npm:string-width@^4.2.0"]. This could result in non-deterministic behavior, skipping.
+warning Pattern ["strip-ansi@^6.0.0"] is trying to unpack in the same destination "/usr/local/share/.cache/yarn/v6/npm-strip-ansi-cjs-6.0.1-integrity/node_modules/strip-ansi-cjs" as pattern ["strip-ansi-cjs@npm:strip-ansi@^6.0.1"]. This could result in non-deterministic behavior, skipping.
+[4/5] Linking dependencies...
+warning " > @storybook/react-vite@8.6.18" has incorrect peer dependency "vite@^4.0.0 || ^5.0.0 || ^6.0.0".
+warning "@storybook/react-vite > @joshwooding/vite-plugin-react-docgen-typescript@0.5.0" has incorrect peer dependency "vite@^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0".
+warning "@storybook/react-vite > @storybook/builder-vite@8.6.18" has incorrect peer dependency "vite@^4.0.0 || ^5.0.0 || ^6.0.0".
+warning "notistack > goober@2.1.18" has unmet peer dependency "csstype@^3.0.10".
+[5/5] Building fresh packages...
+Done in 51.59s.
+yarn run v1.22.22
+$ vite build
+vite v7.3.2 building client environment for production...
+transforming...
+✓ 139 modules transformed.
+rendering chunks...
+
+[vite:dts] Start generate declaration files...
+[96msrc/components/base/autocomplete/autocomplete.tsx[0m:[93m443[0m:[93m29[0m - [91merror[0m[90m TS2741: [0mProperty 'fontSize' is missing in type '{ size: "sm"; }' but required in type '{ size: "sm" | "md"; fontSize: "xs" | "sm" | "md" | "lg" | "xl"; }'.
+
+[7m443[0m     <SelectContext.Provider value={selectContextValue}>
+[7m   [0m [91m                            ~~~~~[0m
+
+  [96msrc/components/base/select/select.tsx[0m:[93m157[0m:[93m3[0m
+    [7m157[0m   fontSize: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    [7m   [0m [96m  ~~~~~~~~[0m
+    'fontSize' is declared here.
+  [96mnode_modules/@types/react/index.d.ts[0m:[93m617[0m:[93m9[0m
+    [7m617[0m         value: T;
+    [7m   [0m [96m        ~~~~~[0m
+    The expected type comes from property 'value' which is declared here on type 'IntrinsicAttributes & ProviderProps<{ size: "sm" | "md"; fontSize: "xs" | "sm" | "md" | "lg" | "xl"; }>'
+[96msrc/components/base/select/combobox.tsx[0m:[93m168[0m:[93m29[0m - [91merror[0m[90m TS2741: [0mProperty 'fontSize' is missing in type '{ size: "sm" | "md"; }' but required in type '{ size: "sm" | "md"; fontSize: "xs" | "sm" | "md" | "lg" | "xl"; }'.
+
+[7m168[0m     <SelectContext.Provider value={{ size }}>
+[7m   [0m [91m                            ~~~~~[0m
+
+  [96msrc/components/base/select/select.tsx[0m:[93m157[0m:[93m3[0m
+    [7m157[0m   fontSize: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    [7m   [0m [96m  ~~~~~~~~[0m
+    'fontSize' is declared here.
+  [96mnode_modules/@types/react/index.d.ts[0m:[93m617[0m:[93m9[0m
+    [7m617[0m         value: T;
+    [7m   [0m [96m        ~~~~~[0m
+    The expected type comes from property 'value' which is declared here on type 'IntrinsicAttributes & ProviderProps<{ size: "sm" | "md"; fontSize: "xs" | "sm" | "md" | "lg" | "xl"; }>'
+
+computing gzip size...
+dist/tailwindClasses.es.js        0.14 kB │ gzip:  0.10 kB
+dist/theme/index.es.js            0.23 kB │ gzip:  0.16 kB
+dist/colors/index.es.js           0.36 kB │ gzip:  0.22 kB
+dist/utils/index.es.js            2.14 kB │ gzip:  0.74 kB
+dist/buttonConstants.es.js        3.70 kB │ gzip:  1.03 kB
+dist/components/index.es.js       4.93 kB │ gzip:  1.83 kB
+dist/index.es.js                  5.95 kB │ gzip:  2.20 kB
+dist/generateMuiPalettes.es.js    6.83 kB │ gzip:  2.28 kB
+dist/checkbox-icons.es.js        36.61 kB │ gzip: 10.93 kB
+dist/createMuiTheme.es.js        54.71 kB │ gzip:  8.07 kB
+dist/SnackbarContent.es.js      402.70 kB │ gzip: 91.79 kB
+[vite:dts] Declaration files built in 21705ms.
+
+dist/tailwindClasses.cjs.js        0.13 kB │ gzip:  0.11 kB
+dist/theme/index.cjs.js            0.34 kB │ gzip:  0.20 kB
+dist/colors/index.cjs.js           0.53 kB │ gzip:  0.25 kB
+dist/utils/index.cjs.js            1.74 kB │ gzip:  0.70 kB
+dist/buttonConstants.cjs.js        2.61 kB │ gzip:  0.92 kB
+dist/generateMuiPalettes.cjs.js    4.89 kB │ gzip:  2.06 kB
+dist/components/index.cjs.js       5.81 kB │ gzip:  1.39 kB
+dist/index.cjs.js                  6.96 kB │ gzip:  1.69 kB
+dist/checkbox-icons.cjs.js        22.34 kB │ gzip:  8.39 kB
+dist/createMuiTheme.cjs.js        35.87 kB │ gzip:  6.74 kB
+dist/SnackbarContent.cjs.js      294.02 kB │ gzip: 80.76 kB
+✓ built in 22.97s
+Done in 24.58s.
+[1/5] Validating package.json...
+[2/5] Resolving packages...
+warning Resolution field "d3-color@3.1.0" is incompatible with requested version "d3-color@1"
+warning Resolution field "immutable@4.3.8" is incompatible with requested version "immutable@5.1.5"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@^7.28.6"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@^7.28.6"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@^7.28.6"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@^7.28.6"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@^7.28.6"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@^7.28.6"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@^7.28.6"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@^7.28.4"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@^7.28.4"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@^7.28.4"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@^7.28.6"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@^7.27.0"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@7.22.10"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@^7.27.0"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@^7.27.0"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@^7.27.0"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@^7.27.0"
+warning Resolution field "prosemirror-model@1.22.1" is incompatible with requested version "prosemirror-model@^1.23.0"
+warning Resolution field "prosemirror-state@1.4.1" is incompatible with requested version "prosemirror-state@^1.4.3"
+warning Resolution field "prosemirror-transform@1.7.0" is incompatible with requested version "prosemirror-transform@^1.10.2"
+warning Resolution field "prosemirror-view@1.28.2" is incompatible with requested version "prosemirror-view@^1.37.0"
+warning Resolution field "prosemirror-transform@1.7.0" is incompatible with requested version "prosemirror-transform@^1.10.2"
+warning Resolution field "prosemirror-view@1.28.2" is incompatible with requested version "prosemirror-view@^1.31.0"
+warning Resolution field "prosemirror-model@1.22.1" is incompatible with requested version "prosemirror-model@^1.25.0"
+warning Resolution field "prosemirror-model@1.22.1" is incompatible with requested version "prosemirror-model@^1.25.0"
+warning Resolution field "prosemirror-transform@1.7.0" is incompatible with requested version "prosemirror-transform@^1.7.3"
+warning Resolution field "prosemirror-model@1.22.1" is incompatible with requested version "prosemirror-model@^1.25.4"
+warning Resolution field "prosemirror-state@1.4.1" is incompatible with requested version "prosemirror-state@^1.4.4"
+warning Resolution field "prosemirror-transform@1.7.0" is incompatible with requested version "prosemirror-transform@^1.10.5"
+warning Resolution field "prosemirror-view@1.28.2" is incompatible with requested version "prosemirror-view@^1.41.4"
+warning Resolution field "serialize-javascript@7.0.5" is incompatible with requested version "serialize-javascript@^4.0.0"
+warning Resolution field "minimatch@3.1.5" is incompatible with requested version "minimatch@^10.2.1"
+warning Resolution field "@babel/runtime@7.26.10" is incompatible with requested version "@babel/runtime@^7.27.6"
+warning Resolution field "ws@8.21.0" is incompatible with requested version "ws@~8.18.3"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^6.3.1"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^6.3.1"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^6.3.1"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^6.3.1"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^6.3.1"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^6.3.1"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^6.3.1"
+warning Resolution field "minimatch@3.1.5" is incompatible with requested version "minimatch@^10.2.2"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^7.7.3"
+warning Resolution field "js-yaml@4.2.0" is incompatible with requested version "js-yaml@^3.13.1"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^6.3.0"
+warning Resolution field "cross-spawn@7.0.5" is incompatible with requested version "cross-spawn@^7.0.6"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^7.5.4"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^6.3.1"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^6.3.1"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^7.5.3"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^7.5.4"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^7.5.3"
+warning Resolution field "@tootallnate/once@3.0.1" is incompatible with requested version "@tootallnate/once@2"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^5.6.0"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^5.6.0"
+warning Resolution field "minimatch@3.1.5" is incompatible with requested version "minimatch@^5.1.0"
+warning Resolution field "semver@7.5.2" is incompatible with requested version "semver@^7.7.3"
+[3/5] Fetching packages...
+make: *** [Makefile:25: yarn_install_cache] Terminated

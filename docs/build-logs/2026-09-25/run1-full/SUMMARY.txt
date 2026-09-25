@@ -1,0 +1,90 @@
+Build started 2026-09-25T01:50:39+00:00 on HEAD@694809c253
+>>> [env] started 2026-09-25T01:50:39+00:00
+<<< [env] rc=0 duration=0m01s log=/home/user/om-build/build-logs/run1/env.log
+>>> [venv] started 2026-09-25T01:50:40+00:00
+<<< [venv] rc=0 duration=0m03s log=/home/user/om-build/build-logs/run1/venv.log
+>>> [prerequisites] started 2026-09-25T01:50:43+00:00
+<<< [prerequisites] rc=0 duration=0m01s log=/home/user/om-build/build-logs/run1/prerequisites.log
+>>> [install_dev_env] started 2026-09-25T01:50:44+00:00
+<<< [install_dev_env] rc=2 duration=5m38s log=/home/user/om-build/build-logs/run1/install_dev_env.log
+--- last 40 lines of /home/user/om-build/build-logs/run1/install_dev_env.log ---
+              ********************************************************************************
+      
+      !!
+        self._finalize_license_expression()
+      running bdist_wheel
+      running build
+      running build_ext
+      building 'kerberos' extension
+      x86_64-linux-gnu-gcc -Wsign-compare -DNDEBUG -g -fwrapv -O2 -Wall -g -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -fstack-protector-strong -fstack-clash-protection -Wformat -Werror=format-security -fcf-protection -g -fwrapv -O2 -fPIC -I/home/user/om-build/env/include -I/usr/include/python3.11 -c src/base64.c -o build/temp.linux-x86_64-cpython-311/src/base64.o /bin/sh: 1: krb5-config: not found
+      x86_64-linux-gnu-gcc: warning: /bin/sh:: linker input file unused because linking not done
+      x86_64-linux-gnu-gcc: error: /bin/sh:: linker input file not found: No such file or directory
+      x86_64-linux-gnu-gcc: warning: 1:: linker input file unused because linking not done
+      x86_64-linux-gnu-gcc: error: 1:: linker input file not found: No such file or directory
+      x86_64-linux-gnu-gcc: warning: krb5-config:: linker input file unused because linking not done
+      x86_64-linux-gnu-gcc: error: krb5-config:: linker input file not found: No such file or directory
+      x86_64-linux-gnu-gcc: warning: not: linker input file unused because linking not done
+      x86_64-linux-gnu-gcc: error: not: linker input file not found: No such file or directory
+      x86_64-linux-gnu-gcc: warning: found: linker input file unused because linking not done
+      x86_64-linux-gnu-gcc: error: found: linker input file not found: No such file or directory
+      error: Command '['x86_64-linux-gnu-gcc', '-Wsign-compare', '-DNDEBUG', '-g', '-fwrapv', '-O2', '-Wall', '-g', '-fno-omit-frame-pointer', '-mno-omit-leaf-frame-pointer', '-fstack-protector-strong', '-fstack-clash-protection', '-Wformat', '-Werror=format-security', '-fcf-protection', '-g', '-fwrapv', '-O2', '-fPIC', '-I/home/user/om-build/env/include', '-I/usr/include/python3.11', '-c', 'src/base64.c', '-o', 'build/temp.linux-x86_64-cpython-311/src/base64.o', '/bin/sh:', '1:', 'krb5-config:', 'not', 'found']' returned non-zero exit status 1.
+      [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+  ERROR: Failed building wheel for kerberos
+  Building wheel for pure-sasl (pyproject.toml): started
+  Building wheel for pure-sasl (pyproject.toml): finished with status 'done'
+  Created wheel for pure-sasl: filename=pure_sasl-0.6.2-py3-none-any.whl size=11519 sha256=b8a2116efbba485aa6f25a07423391b5cd6a68fe3f7189dc4192b466163e9ef3
+  Stored in directory: /root/.cache/pip/wheels/be/bd/15/23761a50b737a712aacac51c718906ce3563705a336d2c4ffc
+  Building wheel for pydruid (pyproject.toml): started
+  Building wheel for pydruid (pyproject.toml): finished with status 'done'
+  Created wheel for pydruid: filename=pydruid-0.6.9-py2.py3-none-any.whl size=34776 sha256=1ceef1a685e8203496a17935b312eb6579cefc2afbf2ec7226c710c67931e5a4
+  Stored in directory: /root/.cache/pip/wheels/78/52/22/3883a6bf922680b5e93457de7413df4d45decd86a26f212ba1
+Successfully built openmetadata-ingestion antlr4-python3-runtime pyspark thrift pyhive clickhouse-sqlalchemy dbt-core-experimental-parser dsnparse pure-sasl pydruid
+Failed to build kerberos
+error: failed-wheel-build-for-install
+
+× Failed to build installable wheels for some pyproject.toml based projects
+╰─> kerberos
+make: *** [Makefile:21: install_dev_env] Error 1
+make: Leaving directory '/home/user/om-build/ingestion'
+>>> [generate] started 2026-09-25T01:56:22+00:00
+<<< [generate] rc=2 duration=0m00s log=/home/user/om-build/build-logs/run1/generate.log
+--- last 40 lines of /home/user/om-build/build-logs/run1/generate.log ---
++ step_generate
++ . env/bin/activate
+++ deactivate nondestructive
+++ '[' -n '' ']'
+++ '[' -n '' ']'
+++ hash -r
+++ '[' -n '' ']'
+++ unset VIRTUAL_ENV
+++ unset VIRTUAL_ENV_PROMPT
+++ '[' '!' nondestructive = nondestructive ']'
+++ VIRTUAL_ENV=/home/user/om-build/env
+++ export VIRTUAL_ENV
+++ _OLD_VIRTUAL_PATH=/root/.local/bin:/root/.cargo/bin:/usr/local/go/bin:/opt/node22/bin:/opt/maven/bin:/opt/gradle/bin:/opt/rbenv/bin:/root/.bun/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+++ PATH=/home/user/om-build/env/bin:/root/.local/bin:/root/.cargo/bin:/usr/local/go/bin:/opt/node22/bin:/opt/maven/bin:/opt/gradle/bin:/opt/rbenv/bin:/root/.bun/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+++ export PATH
+++ '[' -n '' ']'
+++ '[' -z '' ']'
+++ _OLD_VIRTUAL_PS1=
+++ PS1='(env) '
+++ export PS1
+++ VIRTUAL_ENV_PROMPT='(env) '
+++ export VIRTUAL_ENV_PROMPT
+++ hash -r
++ make generate
+Makefile:147: warning: overriding recipe for target 'build-ingestion-base-local'
+Makefile:142: warning: ignoring old recipe for target 'build-ingestion-base-local'
+Running Datamodel Code Generator
+Make sure to first run the install_dev recipe
+rm -rf ingestion/src/metadata/generated
+mkdir -p ingestion/src/metadata/generated
+python scripts/datamodel_generation.py
+Traceback (most recent call last):
+  File "/home/user/om-build/scripts/datamodel_generation.py", line 16, in <module>
+    import datamodel_code_generator.model.pydantic
+ModuleNotFoundError: No module named 'datamodel_code_generator'
+make: *** [Makefile:58: generate] Error 1
+>>> [yarn_install] started 2026-09-25T01:56:22+00:00
